@@ -1,0 +1,10 @@
+{
+  "name": "Conoce tu futuro",
+  "short_name": "Conoce tu futuro",
+  "lang": "es-MX",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "white",
+  "theme_color": "#0baf9a",
+  "description": "Proyecto escolar"
+}
