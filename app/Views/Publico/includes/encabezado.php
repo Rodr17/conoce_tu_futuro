@@ -60,80 +60,17 @@
                     <li>
                         <button class="search-button"><i data-feather="search"></i></button>
                         <!-- Search Input Start -->
-                        <div class="search-full">
+                        <form action="<?= base_url(route_to('automoviles')) ?>" class="search-full">
                             <div class="input-group">
                                 <span class="input-group-text">
                                     <i data-feather="search"></i>
                                 </span>
-                                <input type="text" class="form-control search-type" placeholder="Search here.." />
+                                <input type="text" class="form-control search-type" name="buscar" placeholder="Buscar..." />
                                 <span class="input-group-text close-search">
                                     <i data-feather="x"></i>
                                 </span>
                             </div>
-
-                            <!-- Suggestion Start -->
-                            <div class="search-suggestion">
-                                <ul>
-                                    <li>
-                                        <div class="product-cart media">
-                                            <img src="../assets/images/fashion/product/front/4.jpg" class="img-fluid blur-up lazyload" alt="" />
-                                            <div class="media-body">
-                                                <a href="javascript:void(0)">
-                                                    <h6>Women’s long sleeve Jacket</h6>
-                                                </a>
-                                                <ul class="rating p-0 mb">
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i data-feather="star"></i>
-                                                    </li>
-                                                </ul>
-                                                <p class="mb-0 mt-1">$280.00</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="product-cart media">
-                                            <img src="../assets/images/fashion/product/front/5.jpg" class="img-fluid blur-up lazyload" alt="" />
-                                            <div class="media-body">
-                                                <a href="javascript:void(0)">
-                                                    <h6>Shirt short mini dresses</h6>
-                                                </a>
-                                                <ul class="rating p-0">
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i class="fill" data-feather="star"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i data-feather="star"></i>
-                                                    </li>
-                                                </ul>
-                                                <p class="mb-0 mt-1">$35.00</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- Suggestion Start -->
-                        </div>
+                        </form>
                         <!-- Search Input End -->
                     </li>
 
@@ -144,9 +81,9 @@
                                 <?php
                                 $usuario = auth()->user();
 
-                                if(auth()->loggedIn() && $usuario->inGroup('cliente')) : ?>
+                                if (auth()->loggedIn() && $usuario->inGroup('cliente')) : ?>
                                     <li><a href="<?= base_url(route_to('mi_cuenta')) ?>">Mi cuenta</a></li>
-                                    <li><a href="<?= base_url(route_to('separaciones')) ?>">Mis separaciones</a></li>
+                                    <li><a href="<?= base_url(route_to('separaciones')) ?>">Separaciones</a></li>
                                     <li><a href="<?= base_url(route_to('citas')) ?>">Mis citas</a></li>
                                     <li><a href="<?= base_url('cerrar-sesion') ?>">Cerrar sesión</a></li>
                                 <?php else : ?>
@@ -157,17 +94,36 @@
                         </div>
                     </li>
 
+                    <?php
+
+                    $id_usuario = auth()->id();
+
+                    $cantidad_favoritos = model('FavoritosAutomoviles')
+                        ->selectCount('id_automovil')
+                        ->where('id_usuario', $id_usuario)
+                        ->first()['id_automovil'];
+                    ?>
                     <li>
                         <div class="dropdown whislist-dropdown">
-                            <a href="javascript:void(0)"><i data-feather="heart"></i></a>
+                            <a href="javascript:void(0)"><i data-feather="heart"></i><span class="notification-label"><?= $cantidad_favoritos ?></span></a>
                             <div class="onhover-show-div">
-                                <a href="<?= base_url() ?>"> <img src="/iconos/box.svg" class="img-fluid" alt="box" /> </a>
-                                <div class="content">
-                                    <a href="<?= base_url() ?>">
-                                        <h6>¡Lista de favoritos vacía!</h6>
-                                        <p>Explora más y selecciona elementos</p>
-                                    </a>
-                                </div>
+                                <?php if ($cantidad_favoritos) : ?>
+                                    <a href="<?= base_url(route_to('favoritos')) ?>"></a>
+                                    <div class="content">
+                                        <a href="<?= base_url(route_to('favoritos')) ?>">
+                                            <h6>¡Da clic para ir a tus favoritos!</h6>
+                                            <p>Elige lo mejor de lo mejor para ti</p>
+                                        </a>
+                                    </div>
+                                <?php else : ?>
+                                    <a href="<?= base_url(route_to('automoviles')) ?>"> <img src="/iconos/box.svg" class="img-fluid" alt="box" /> </a>
+                                    <div class="content">
+                                        <a href="<?= base_url(route_to('automoviles')) ?>">
+                                            <h6>¡Lista de favoritos vacía!</h6>
+                                            <p>Explora más y selecciona elementos</p>
+                                        </a>
+                                    </div>
+                                <?php endif ?>
                             </div>
                         </div>
                     </li>

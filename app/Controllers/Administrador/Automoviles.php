@@ -422,7 +422,16 @@ class Automoviles extends BaseController
      */
     public function delete($id = null)
     {
-        //
+        $datos_mensaje = ['tipo' => 'alerta-satisfactoria', 'mensaje' => '¡Automóvil eliminado!'];
+
+        if ($this->modelo->delete($id, true)) {
+            return redirect()->route('automoviles_admin')->with('alerta', $datos_mensaje);
+        }
+
+        $datos_mensaje['tipo']    = 'alerta-denegada';
+        $datos_mensaje['mensaje'] = '¡No se pudo eliminar el automóvil!';
+
+        return redirect()->route('automoviles_admin')->with('alerta', $datos_mensaje);
     }
 
     /**

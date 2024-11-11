@@ -116,7 +116,7 @@
 
                             <div class="btn-group">
                                 <a href="<?= base_url(route_to('me_interesa', $automovil['id'])) ?>" class="btn-solid btn-sm">Me interesa</a>
-                                <a href="<?= base_url() ?>" class="btn-outline btn-sm wishlist-btn">Agregar a mis favoritos</a>
+                                <a href="javascript:void(0)" class="btn-outline btn-sm <?= $automovil['es_favorito'] ?? false ? 'wishlist-delete-btn' : 'wishlist-btn' ?>" id="<?= $automovil['id'] ?>"><?= $automovil['es_favorito']  ?? false ? 'Eliminar de favoritos' : 'Agregar a favoritos' ?></a>
                             </div>
                         </div>
                     </div>

@@ -233,41 +233,72 @@ window.addEventListener("load", () => {
 			}, 4000);
 		});
 	});
-	const wishListButton = document.querySelectorAll(".wishlist-btn ");
-	wishListButton.forEach(el => {
+
+	// Seleccionar todos los botones de wishlist
+	const wishListButtons = document.querySelectorAll(".wishlist-btn, .wishlist-delete-btn");
+	wishListButtons.forEach(el => {
 		el.addEventListener("click", function (e) {
 			const notificacion = document.querySelector(".addToWishlist");
 
-			console.log("🚀 ~ notificacion.attributtes.id:", el.id);
-			const datos = { id_automovil: e.id };
+			// Determinar si agregar o eliminar de favoritos basado en la clase del botón
+			const esAgregar = el.classList.contains("wishlist-btn");
+			const url = esAgregar ? "/mi-cuenta/favoritos" : `/mi-cuenta/favoritos/${el.id}`;
+			const method = esAgregar ? "POST" : "DELETE";
+
+			// Crear la configuración de la solicitud
+			const datos = new FormData();
+			if (esAgregar) datos.append("id_automovil", el.id);
 
 			const config_request = {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-                    'Accept': 'application/json'
-				},
-				body: JSON.stringify(datos),
+				method: method,
+				body: esAgregar ? datos : undefined, // Solo incluir `body` en la solicitud POST
 			};
 
-			fetch("/mi-cuenta/favoritos", config_request)
-            .then(response => response.json())
-            .then(respuesta => {
-				if (respuesta.guardado) {
-					// Imágen
-					notificacion.children[0].children[0].src = respuesta.imagen;
+			// Realizar la solicitud fetch
+			fetch(url, config_request)
+				.then(response => response.json())
+				.then(respuesta => {
+					if (esAgregar && respuesta.guardado) {
+						// Automóvil agregado a favoritos
+						notificacion.children[0].children[0].src = respuesta.imagen;
 
-					notificacion.classList.add("show");
-					setTimeout(() => {
-						notificacion.classList.remove("show");
-					}, 4000);
-				}
-			})
-            .catch((error) => {
-                // Redirige al inicio de sesión si no está autenticado
-                window.location.href = '/iniciar-sesion';
-                throw new Error('Usuario no autenticado');
-            });
+						// Cambiar datos de botón para eliminar
+						el.classList.remove("wishlist-btn");
+						el.classList.add("wishlist-delete-btn");
+						if (el.innerText) {
+							el.innerText = "Eliminar de favoritos";
+						}
+
+						// Mostrar notificación
+						notificacion.querySelector("div h5").innerText = "Añadido a favoritos";
+						notificacion.classList.add("show");
+						setTimeout(() => {
+							notificacion.classList.remove("show");
+						}, 4000);
+					} else if (!esAgregar && respuesta.eliminado) {
+						// Automóvil eliminado de favoritos
+						notificacion.children[0].children[0].src = respuesta.imagen;
+
+						// Cambiar datos de botón para agregar
+						el.classList.remove("wishlist-delete-btn");
+						el.classList.add("wishlist-btn");
+						if (el.innerText) {
+							el.innerText = "Agregar a favoritos";
+						}
+
+						// Mostrar notificación de eliminación
+						notificacion.querySelector("div h5").innerText = "Eliminado de favoritos";
+						notificacion.classList.add("show");
+						setTimeout(() => {
+							notificacion.classList.remove("show");
+						}, 4000);
+					}
+				})
+				.catch(error => {
+					// Redirige al inicio de sesión si no está autenticado
+					window.location.href = "/iniciar-sesion";
+					throw new Error("Usuario no autenticado");
+				});
 		});
 	});
 });
@@ -436,8 +467,38 @@ window.addEventListener("load", function () {
 const wishlistProduct = document.querySelectorAll(".product-wishlist");
 wishlistProduct?.forEach(el => {
 	const deleteButton = el.querySelector(".delete-button");
-	deleteButton.addEventListener("click", function () {
-		this.closest(".col").style.display = "none";
+	deleteButton.addEventListener("click", function (e) {
+		e.preventDefault();
+
+        const notificacion = document.querySelector(".addToWishlist");
+
+		const config_request = {
+			method: "DELETE",
+		};
+
+        const id_automovil = deleteButton.dataset['id'];
+
+		fetch(`/mi-cuenta/favoritos/${id_automovil}`, config_request)
+			.then(response => response.json())
+			.then(respuesta => {
+				if (respuesta.eliminado) {
+					// Imágen
+					notificacion.children[0].children[0].src = respuesta.imagen;
+
+					// Mostrar notificación de eliminación
+					notificacion.querySelector("div h5").innerText = "Eliminado de favoritos";
+
+					this.closest(".col").style.display = "none";
+
+					notificacion.classList.add("show");
+					setTimeout(() => {
+						notificacion.classList.remove("show");
+					}, 4000);
+				}
+			})
+			.catch(error => {
+				console.log("🚀 ~ error:", error);
+			});
 	});
 });
 
@@ -457,7 +518,7 @@ cartRemoveBtn?.forEach(el => {
   ==============================*/
 window.addEventListener("load", function () {
 	if ("serviceWorker" in navigator) {
-		navigator.serviceWorker.register("js/sw.js");
+		navigator.serviceWorker.register("/js/sw.js");
 	}
 });
 

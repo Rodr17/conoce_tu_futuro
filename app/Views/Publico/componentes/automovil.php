@@ -29,7 +29,7 @@ $imagenes = model('AutomovilesImagenes')
             <!-- Option -->
             <ul class="option-wrap">
                 <li>
-                    <a href="javascript:void(0)" class="wishlist-btn" id="<?= $automovil['id'] ?>">
+                    <a href="javascript:void(0)" class="<?= $automovil['es_favorito'] ?? false ? 'wishlist-delete-btn' : 'wishlist-btn' ?>" id="<?= $automovil['id'] ?>">
                         <i data-feather="heart"></i>
                     </a>
                 </li>

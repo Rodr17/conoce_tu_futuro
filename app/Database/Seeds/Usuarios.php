@@ -62,8 +62,8 @@ class Usuarios extends Seeder
         $usuario = new User([
 			'nombre'    => 'Luz Elizabeth',
 			'apellidos' => 'Tamez Morales',
-			'email'     => 'Luz.tamez.morales06@gmsil.com',
-			'password'  => 'AmorSL 07',
+			'email'     => 'Luz.tamez.morales06@gmail.com',
+			'password'  => 'AmorSL07',
 		]);
 
 		// Salta validaciones del modelo para utilizar las reglas anteriores
@@ -86,7 +86,7 @@ class Usuarios extends Seeder
 			'nombre'    => 'Daeed Jair',
 			'apellidos' => 'Garcia Alvarez',
 			'email'     => 'daeedgar@gmail.com',
-			'password'  => 'Male y Max',
+			'password'  => 'MaleyMax',
 		]);
 
 		// Salta validaciones del modelo para utilizar las reglas anteriores

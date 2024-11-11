@@ -113,7 +113,7 @@ class Automoviles extends Model
 			'rules' => [
 				'required',
 				'string',
-				'max_length[255]',
+				'max_length[300]',
 			],
 		],
 		'descripcion_larga'  => [

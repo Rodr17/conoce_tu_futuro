@@ -44,7 +44,7 @@ class Versiones extends Model
 			'label' => 'nombre',
 			'rules' => [
 				'required',
-				'min_length[3]',
+				'min_length[2]',
 				'is_unique[versiones.nombre, id, {id}]',
 			],
             'errors' => [

@@ -36,64 +36,74 @@
     <!-- Breadcrumb End -->
 
     <!-- About Us Section Start -->
-    <section class="about-section">
+    <section class="about-section shop-page">
         <div class="container-lg">
-            <div class="row g-0 g-lg-4 g-xl-5">
-                <div class="col-lg-10 justify-content-center order-2 order-lg-1">
-                    <div class="align-ment">
-                        <div class="contenten-wrap">
-                            <div class="content-box">
-                                <h5>Conoce tu futuro es el mejor mercado para adquirir tu próximo auto</h5>
-                                <h4>Ofrecemos confianza, seguridad y atención mecánica especializada</h4>
+            <div class="row g-0 g-lg-4 g-xl-5 justify-content-center">
+                <div class="content-box">
+                    <h4>¿Cómo te gustaría conseguir tu pŕoximo automóvil?</h5>
+                        <h5>"Conoce tu futuro" es el mejor mercado para adquirir tu próximo auto</h5>
+                        <p>Te ofrecemos las siguientes opciones</p>
+                </div>
+                
+                <!-- Automóvil -->
+                <div class="col-12 col-md-10 col-xl-8 align-self-center">
+                    <div class="product-tab-content mb-5">
+                        <div class="list-section view-option row g-3 g-xl-4 ratio_asos">
+                            <!-- Automóvil card -->
+                            <?= view('Publico/componentes/automovil', compact('automovil')) ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 justify-content-center order-2 order-lg-1">
+                    <div class="contenten-wrap">
+                        <form action="<?= base_url(route_to('me_interesa_opciones', $automovil['id'])) ?>" class="row g-3 g-md-4 mb-4" method="POST" id="form-me-interesa">
+                            <?= csrf_field() ?>
 
-                                <p>
-                                    Con nuestros servicios posventa extiendes la vida de tu auto. Puedes solicitar verificación vehicular, revisamos mecánica, estética y documentación. También puedes visitarnos directamente y conocer tu auto para una mejor seguridad y confianza.
-                                </p>
+                            <div class="col-12 col-xl-6">
+                                <div class="address-box checked">
+                                    <div class="radio-box">
+                                        <div>
+                                            <input class="radio-input" type="radio" checked id="radio1" name="radio1" />
+                                            <label class="radio-label" for="radio1">Quiero separarlo</label>
+                                        </div>
+                                        <span class="badges badges-pill badges-theme">Recomendado</span>
+                                    </div>
+                                    <div class="address-detail">
+                                        <lo class="content-color font-default">La mejor opción que te asegura obtener tu automóvil sin que alguien más te lo gane</lo>
+                                        <p class="content-color font-default">Anímate, el proceso es en línea, tus pagos están 100% protegidos y seguros</p>
+                                        <span class="content-color font-default">Costo: <span class="title-color font-default fw-500"><?= $costo_separacion ?></span></span>
+                                        <span class="content-color font-default mt-1">Garantía: <span class="title-color font-default fw-500"> 7 días, a partir del día de pago</span></span>
+                                        <span class="content-color font-default mt-1">Método de pago: <span class="title-color font-default fw-500">Tarjetas de crédito ó débito</span></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row g-3 g-lg-2 g-xl-3 widget-list">
-                                <div class="col-6 col-sm-4">
-                                    <div class="widget">
-                                        <span><i data-feather="users"></i></span>
 
+                            <div class="col-12 col-xl-6">
+                                <div class="address-box">
+                                    <div class="radio-box">
                                         <div>
-                                            <h6>1,000</h6>
-                                            <p>Registros</p>
+                                            <input class="radio-input" type="radio" id="radio3" name="radio1" />
+                                            <label class="radio-label" for="radio3">Quiero conocerlo (agendar visita)</label>
                                         </div>
+                                        <span class="badges badges-pill bg-warning">Poco recomendado</span>
+                                    </div>
+                                    <div class="address-detail">
+                                        <p class="content-color font-default">Buena opción para ti que te gusta ver, conocerlo y vivir la experiencia en persona de tu próximo automóvil</p>
+                                        <p class="content-color font-default">Sujeto a cambios, recuerda que sigue estando disponible el automóvil y alguien más puede separarlo. Te recomendamos separarlo</p>
+                                        <span class="content-color font-default">Costo: <span class="title-color font-default fw-500"> Sin costo</span></span>
+                                        <span class="content-color font-default mt-1">Disponibilidad: <span class="title-color font-default fw-500">No asegurado, previo a la fecha agendada</span></span>
                                     </div>
                                 </div>
+                            </div>
+                        </form>
 
-                                <div class="col-6 col-sm-4">
-                                    <div class="widget">
-                                        <span><i data-feather="shopping-bag"></i></span>
 
-                                        <div>
-                                            <h6>500+</h6>
-                                            <p>Ventas</p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-6 col-sm-4">
-                                    <div class="widget">
-                                        <span><i data-feather="shopping-cart"></i></span>
 
-                                        <div>
-                                            <h6>100+</h6>
-                                            <p>Separaciones diariamente</p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-6 col-sm-4">
-                                    <div class="widget">
-                                        <span><i data-feather="graph"></i></span>
-
-                                        <div>
-                                            <h6>80%</h6>
-                                            <p>Crecimiento por mes</p>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="row justify-content-end">
+                            <div class="col-12 text-end">
+                                <button type="submit" form="form-me-interesa" class="btn-solid btn-sm mb-line">Aceptar</button>
                             </div>
                         </div>
                     </div>
@@ -104,4 +114,10 @@
     <!-- About Us Section End -->
 </main>
 <!-- Main End -->
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+
+</script>
 <?= $this->endSection() ?>

@@ -4,7 +4,7 @@
             <a href="<?= base_url(route_to('automovil', $automovil['id_automovil'])) ?> " class="primary-img"><img class="img-fluid bg-img" src="<?= base_url($automovil['imagen']) ?>" alt="Imágen automóvil principal" /> </a>
 
             <!-- Delete Button -->
-            <button class="delete-button"><i data-feather="x"></i></button>
+            <button class="delete-button" data-id="<?= $automovil['id_automovil'] ?>"><i data-feather="x"></i></button>
         </div>
         <div class="content-wrap">
             <!-- Content Box -->
@@ -16,7 +16,7 @@
                 </a>
             </div>
             <div class="mov-to-bag">
-                <a href="<?= base_url(route_to('eliminar_favoritos', $automovil['id'])) ?>" class="btn btn-outline btn-sm addtocart-btn">Eliminar de favoritos <i class="arrow"></i> </a>
+                <a href="javascript:void(0)" class="btn btn-outline btn-sm eliminar-favoritos" id="<?= $automovil['id_automovil'] ?>">Eliminar de favoritos <i class="arrow"></i> </a>
             </div>
         </div>
     </div>

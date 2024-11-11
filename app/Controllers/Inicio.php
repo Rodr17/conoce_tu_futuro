@@ -7,6 +7,10 @@ use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Inicio extends BaseController
 {
+    public function __construct()
+    {
+        helper('number');
+    }
     /**
      * Muestra una vista
      *
@@ -63,29 +67,41 @@ class Inicio extends BaseController
 
     public function automoviles()
     {
+        $id_usuario = auth()->id();
+
+        $campos = [
+            'automoviles.id',
+            'automoviles.año',
+            'automoviles.precio',
+            'automoviles.imagen',
+            'automoviles.estatus',
+            'marcas.nombre AS marca',
+            'CONCAT(
+                modelos.nombre, " ",
+                IF(versiones.nombre, versiones.nombre, ""), " ", 
+                automoviles.año 
+            ) AS nombre',
+            'automoviles.descripcion',
+            'colores.nombre AS color_nombre',
+            'colores.hexadecimal AS color_hexadecimal',
+        ];
+
+        if ($id_usuario) {
+            $campos[] = 'IF(favoritos_automoviles.id IS NOT NULL, 1, 0) AS es_favorito';
+        }
+
         $automoviles_query = model('Automoviles')
-            ->select([
-                'automoviles.id',
-                'automoviles.año',
-                'automoviles.precio',
-                'automoviles.imagen',
-                'automoviles.estatus',
-                'marcas.nombre AS marca',
-                'CONCAT(
-                    modelos.nombre, " ",
-                    versiones.nombre, " ", 
-                    automoviles.año 
-                ) AS nombre',
-                'automoviles.descripcion',
-                'colores.nombre AS color_nombre',
-                'colores.hexadecimal AS color_hexadecimal',
-            ])
+            ->select($campos)
             ->join('modelos', 'modelos.id = automoviles.id_modelo', 'left')
             ->join('marcas', 'marcas.id = modelos.id_marca', 'left')
             ->join('versiones', 'versiones.id = automoviles.id_version', 'left')
             ->join('colores', 'colores.id = automoviles.id_color', 'left')
             ->join('transmisiones', 'transmisiones.id = automoviles.id_transmision', 'left')
             ->join('tipos_de_combustible', 'tipos_de_combustible.id = automoviles.id_tipo_de_combustible', 'left');
+
+        if ($id_usuario) {
+            $automoviles_query->join('favoritos_automoviles', "favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = $id_usuario", 'left');
+        }
 
         // Filtro de busqueda por texto
         $datos['texto_busqueda'] = '';
@@ -159,7 +175,7 @@ class Inicio extends BaseController
             $datos['parametros_tipos_de_combustible'] = $tipos_de_combustible;
         }
 
-        $automoviles_query->orderBy('id', 'DESC');
+        $automoviles_query->orderBy('automoviles.id', 'DESC');
 
         $datos['automoviles'] = $automoviles_query->paginate(config('Pager')->perPage);
         $datos['paginacion']  = $automoviles_query->pager;
@@ -213,28 +229,41 @@ class Inicio extends BaseController
      */
     public function automovil($id = null)
     {
-        $datos['automovil'] = model('Automoviles')
-            ->select([
-                'automoviles.*',
-                'marcas.nombre AS marca',
-                'modelos.nombre AS modelo',
-                'CONCAT(
-                    modelos.nombre, " ",
-                    versiones.nombre
-                ) AS nombre',
-                'versiones.nombre AS version',
-                'colores.nombre AS color_nombre',
-                'colores.hexadecimal AS color_hexadecimal',
-                'transmisiones.nombre AS transmision',
-                'tipos_de_combustible.nombre AS tipo_de_combustible',
-            ])
+        $id_usuario = auth()->id();
+
+        $campos = [
+            'automoviles.*',
+            'marcas.nombre AS marca',
+            'modelos.nombre AS modelo',
+            'CONCAT(
+                modelos.nombre, " ",
+                IFNULL(versiones.nombre, "")
+            ) AS nombre',
+            'versiones.nombre AS version',
+            'colores.nombre AS color_nombre',
+            'colores.hexadecimal AS color_hexadecimal',
+            'transmisiones.nombre AS transmision',
+            'tipos_de_combustible.nombre AS tipo_de_combustible',
+        ];
+
+        if ($id_usuario) {
+            $campos[] = 'IF(favoritos_automoviles.id IS NOT NULL, 1, 0) AS es_favorito';
+        }
+
+        $automoviles_query = model('Automoviles')
+            ->select($campos)
             ->join('modelos', 'modelos.id = automoviles.id_modelo', 'left')
             ->join('marcas', 'marcas.id = modelos.id_marca', 'left')
             ->join('versiones', 'versiones.id = automoviles.id_version', 'left')
             ->join('colores', 'colores.id = automoviles.id_color', 'left')
             ->join('transmisiones', 'transmisiones.id = automoviles.id_transmision', 'left')
-            ->join('tipos_de_combustible', 'tipos_de_combustible.id = automoviles.id_tipo_de_combustible', 'left')
-            ->find($id);
+            ->join('tipos_de_combustible', 'tipos_de_combustible.id = automoviles.id_tipo_de_combustible', 'left');
+
+        if ($id_usuario) {
+            $automoviles_query->join('favoritos_automoviles', "favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = $id_usuario", 'left');
+        }
+
+        $datos['automovil'] = $automoviles_query->find($id);
 
         if (!$datos['automovil']) {
             throw PageNotFoundException::forPageNotFound();
@@ -255,22 +284,36 @@ class Inicio extends BaseController
      */
     public function me_interesa($id = null)
     {
-        $datos['automovil'] = model('Automoviles')
-            ->select([
-                'automoviles.*',
-                'marcas.nombre AS marca',
-                'CONCAT(
-                    modelos.nombre, " ",
-                    versiones.nombre
-                ) AS nombre',
-                'colores.nombre AS color_nombre',
-                'colores.hexadecimal AS color_hexadecimal',
-            ])
+        $id_usuario = auth()->id();
+
+        $campos = [
+            'automoviles.*',
+            'marcas.nombre AS marca',
+            'CONCAT(
+                marcas.nombre, " ",
+                modelos.nombre, " ",
+                IFNULL(versiones.nombre, "")
+            ) AS nombre',
+            'colores.nombre AS color_nombre',
+            'colores.hexadecimal AS color_hexadecimal',
+        ];
+
+        if ($id_usuario) {
+            $campos[] = 'IF(favoritos_automoviles.id IS NOT NULL, 1, 0) AS es_favorito';
+        }
+
+        $automoviles_query = model('Automoviles')
+            ->select($campos)
             ->join('modelos', 'modelos.id = automoviles.id_modelo', 'left')
             ->join('marcas', 'marcas.id = modelos.id_marca', 'left')
             ->join('versiones', 'versiones.id = automoviles.id_version', 'left')
-            ->join('colores', 'colores.id = automoviles.id_color', 'left')
-            ->first();
+            ->join('colores', 'colores.id = automoviles.id_color', 'left');
+            
+        if ($id_usuario) {
+            $automoviles_query->join('favoritos_automoviles', 'favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = ' . $id_usuario, 'left');
+            # code...
+        }
+        $datos['automovil'] = $automoviles_query->first();
 
         if (!$datos['automovil']) {
             throw PageNotFoundException::forPageNotFound();
@@ -281,7 +324,33 @@ class Inicio extends BaseController
             ->where('id_automovil', $id)
             ->find();
 
+        $datos['costo_separacion'] = obtener_configuracion('monto_separacion');
+        $datos['costo_separacion'] = number_to_currency($datos['costo_separacion'], 'MXN', 'es_MX');
+
         return view('Publico/me-interesa', $datos);
+    }
+
+    /**
+     * Muestra una vista
+     *
+     * @return string
+     */
+    public function me_interesa_opciones($id = null)
+    {
+        $datos = $this->request->getPost();
+        
+        $datos['automovil'] = model('Automoviles')
+            ->select(['id'])
+            ->find($id);
+
+        if (!$datos['automovil']) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        $datos['costo_separacion'] = obtener_configuracion('monto_separacion');
+        $datos['costo_separacion'] = number_to_currency($datos['costo_separacion'], 'MXN', 'es_MX');
+
+        return view('Publico/separacion', $datos);
     }
 
     /**

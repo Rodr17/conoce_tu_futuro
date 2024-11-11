@@ -35,7 +35,7 @@
     <section class="section-b-space wishlist-page">
         <div class="container-lg">
             <div class="row g-3 g-3 g-xxl-4 ratio_asos row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xl-5 row-cols-xxl-6">
-                <?php foreach($automoviles as $automovil) : ?>
+                <?php foreach ($automoviles as $automovil) : ?>
                     <?= view('Publico/componentes/favorito-automovil', compact('automovil')) ?>
                 <?php endforeach ?>
             </div>
@@ -44,4 +44,46 @@
     <!-- Wishlist Section End -->
 </main>
 <!-- Main End -->
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const notificacion = document.querySelector(".addToWishlist");
+
+        const btn_eliminar_favoritos = document.querySelectorAll(".eliminar-favoritos");
+        
+        btn_eliminar_favoritos.forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                const config_request = {
+                    method: 'DELETE',
+                };
+
+                fetch(`/mi-cuenta/favoritos/${btn.id}`, config_request)
+                    .then(response => response.json())
+                    .then(respuesta => {
+                        if (respuesta.eliminado) {
+                            // Imágen
+                            notificacion.children[0].children[0].src = respuesta.imagen;
+
+                            // Mostrar notificación de eliminación
+                            notificacion.querySelector("div h5").innerText = "Eliminado de favoritos";
+
+                            this.closest(".col").style.display = "none";
+
+                            notificacion.classList.add("show");
+                            setTimeout(() => {
+                                notificacion.classList.remove("show");
+                            }, 4000);
+                        }
+                    })
+                    .catch(error => {
+                        console.log("🚀 ~ error:", error);
+                    });
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

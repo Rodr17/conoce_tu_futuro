@@ -61,7 +61,7 @@ class CrearAutomoviles extends Migration
             ],
             'descripcion'            => [
                 'type'       => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 300,
             ],
             'descripcion_larga'      => [
                 'type' => 'TEXT',

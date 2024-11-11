@@ -40,6 +40,7 @@ $routes->group('', function ($routes) {
     $routes->group('autos', function ($routes) {
         $routes->get('/', [Inicio::class, 'automoviles'], ['as' => 'automoviles']);
         $routes->get('(:num)', [Inicio::class, 'automovil'], ['as' => 'automovil']);
+        $routes->post('(:num)/me-interesa', [Inicio::class, 'me_interesa_opciones/$1'], ['as' => 'me_interesa_opciones']);
         $routes->get('(:num)/me-interesa', [Inicio::class, 'me_interesa/$1'], ['as' => 'me_interesa']);
     });
 

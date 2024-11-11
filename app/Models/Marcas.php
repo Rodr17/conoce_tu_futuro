@@ -34,7 +34,7 @@ class Marcas extends Model
 			'label' => 'nombre',
 			'rules' => [
 				'required',
-				'min_length[3]',
+				'min_length[2]',
 				'is_unique[marcas.nombre, id, {id}]',
 			],
             'errors' => [

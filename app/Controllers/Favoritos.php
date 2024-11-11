@@ -31,6 +31,7 @@ class Favoritos extends BaseController
                 'automoviles.precio',
                 'automoviles.imagen',
                 'marcas.nombre AS marca',
+                'modelos.nombre AS modelo',
                 'CONCAT(
                     modelos.nombre, " ",
                     versiones.nombre
@@ -68,7 +69,7 @@ class Favoritos extends BaseController
         $datos               = $this->request->getPost();
         $datos['id_usuario'] = auth()->user()->id;
 
-        $imagen = model('Automovil')
+        $imagen = model('Automoviles')
             ->select('imagen')
             ->find($datos['id_automovil'] ?? null)['imagen'] ?? null;
 
@@ -76,45 +77,43 @@ class Favoritos extends BaseController
 
         $respuesta = [
             'guardado' => (bool) $id_favorito,
-            'imágen'   => $imagen
+            'imagen'   => "/$imagen"
         ];
 
         return $this->response->setJSON($respuesta);
     }
 
     /**
-     * Return the editable properties of a resource object.
+     * Elimina un registro
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function edit($id = null)
-    {
-        //
-    }
-
-    /**
-     * Add or update a model resource, from "posted" properties.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function update($id = null)
-    {
-        //
-    }
-
-    /**
-     * Delete the designated resource object from the model.
-     *
-     * @param int|string|null $id
+     * @param int $id ID del automóvil
      *
      * @return ResponseInterface
      */
     public function delete($id = null)
     {
-        //
+        if (!auth()->loggedIn() || !auth()->user()->inGroup('cliente')) {
+            return $this->response
+            ->setStatusCode(401)
+            ->setJSON(['url' => route_to('login')]);
+        }
+
+        $datos['id_usuario'] = auth()->user()->id;
+        $datos['id_automovil'] = $id;
+
+        $imagen = model('Automoviles')
+            ->select('imagen')
+            ->find($datos['id_automovil'] ?? null)['imagen'] ?? null;
+
+        $favorito_eliminado = $this->modelo
+        ->where($datos)
+        ->delete(null, true);
+
+        $respuesta = [
+            'eliminado' => (bool) $favorito_eliminado,
+            'imagen'   => "/$imagen"
+        ];
+
+        return $this->response->setJSON($respuesta);
     }
 }

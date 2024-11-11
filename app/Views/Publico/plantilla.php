@@ -98,9 +98,9 @@
         <!-- Notification Start -->
         <div class="notification-wrap addToWishlist">
             <div class="notification">
-                <img src="" alt="product" />
+                <img src="" alt="Imágen automóvil" />
                 <div>
-                    <h5>Added To Wishlist</h5>
+                    <h5>Añadido a favoritos</h5>
                 </div>
             </div>
         </div>
