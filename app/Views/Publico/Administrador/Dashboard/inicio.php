@@ -43,6 +43,9 @@
                 </div>
 
                 <div class="col-lg-8 col-xl-9">
+                    <!-- Alerta -->
+                    <?= view('Publico/componentes/alerta') ?>
+                    
                     <div class="right-content tab-content" id="myTabContent">
                         <!-- User Dashboard Start -->
                         <div class="tab-pane show active" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">

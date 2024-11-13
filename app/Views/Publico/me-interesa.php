@@ -40,11 +40,14 @@
         <div class="container-lg">
             <div class="row g-0 g-lg-4 g-xl-5 justify-content-center">
                 <div class="content-box">
-                    <h4>¿Cómo te gustaría conseguir tu pŕoximo automóvil?</h5>
-                        <h5>"Conoce tu futuro" es el mejor mercado para adquirir tu próximo auto</h5>
-                        <p>Te ofrecemos las siguientes opciones</p>
+                    <!-- Alerta -->
+                    <?= view('Publico/componentes/alerta') ?>
+
+                    <h4>¿Cómo te gustaría conseguir tu próximo automóvil?</h4>
+                    <h5>"Conoce tu futuro" es el mejor mercado para adquirir tu próximo auto</h5>
+                    <p>Te ofrecemos las siguientes opciones</p>
                 </div>
-                
+
                 <!-- Automóvil -->
                 <div class="col-12 col-md-10 col-xl-8 align-self-center">
                     <div class="product-tab-content mb-5">
@@ -56,15 +59,13 @@
                 </div>
                 <div class="col-lg-12 justify-content-center order-2 order-lg-1">
                     <div class="contenten-wrap">
-                        <form action="<?= base_url(route_to('me_interesa_opciones', $automovil['id'])) ?>" class="row g-3 g-md-4 mb-4" method="POST" id="form-me-interesa">
-                            <?= csrf_field() ?>
-
+                        <form action="<?= base_url(route_to('me_interesa_opciones', $automovil['id'])) ?>" class="row g-3 g-md-4 mb-4" id="form-me-interesa">
                             <div class="col-12 col-xl-6">
                                 <div class="address-box checked">
                                     <div class="radio-box">
                                         <div>
-                                            <input class="radio-input" type="radio" checked id="radio1" name="radio1" />
-                                            <label class="radio-label" for="radio1">Quiero separarlo</label>
+                                            <input class="radio-input" type="radio" id="separacion" name="opcion" value="separacion" checked />
+                                            <label class="radio-label" for="separacion">Quiero separarlo</label>
                                         </div>
                                         <span class="badges badges-pill badges-theme">Recomendado</span>
                                     </div>
@@ -82,8 +83,8 @@
                                 <div class="address-box">
                                     <div class="radio-box">
                                         <div>
-                                            <input class="radio-input" type="radio" id="radio3" name="radio1" />
-                                            <label class="radio-label" for="radio3">Quiero conocerlo (agendar visita)</label>
+                                            <input class="radio-input" type="radio" id="agendar-visita" name="opcion" value="agendar-visita" />
+                                            <label class="radio-label" for="agendar-visita">Quiero conocerlo (agendar visita)</label>
                                         </div>
                                         <span class="badges badges-pill bg-warning">Poco recomendado</span>
                                     </div>
@@ -96,11 +97,7 @@
                                 </div>
                             </div>
                         </form>
-
-
-
-
-
+                        
                         <div class="row justify-content-end">
                             <div class="col-12 text-end">
                                 <button type="submit" form="form-me-interesa" class="btn-solid btn-sm mb-line">Aceptar</button>

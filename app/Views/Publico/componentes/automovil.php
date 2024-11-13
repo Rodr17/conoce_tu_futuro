@@ -46,7 +46,9 @@ $imagenes = model('AutomovilesImagenes')
                     <?= $automovil['descripcion'] ?>
                 </p>
             </a>
-            <a href="<?= base_url(route_to('me_interesa', $automovil['id'])) ?>" class="btn btn-solid btn-sm mb-line addtocart-btn">Me interesa <i class="arrow"></i> </a>
+            <?php if(!url_is('autos/*/me-interesa*') && !url_is('autos/*/separacion-exitosa*')) : ?>
+                <a href="<?= base_url(route_to('me_interesa', $automovil['id'])) ?>" class="btn btn-solid btn-sm mb-line addtocart-btn">Me interesa <i class="arrow"></i> </a>
+            <?php endif ?>
         </div>
     </div>
 </div>

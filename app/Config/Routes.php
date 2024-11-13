@@ -40,8 +40,12 @@ $routes->group('', function ($routes) {
     $routes->group('autos', function ($routes) {
         $routes->get('/', [Inicio::class, 'automoviles'], ['as' => 'automoviles']);
         $routes->get('(:num)', [Inicio::class, 'automovil'], ['as' => 'automovil']);
-        $routes->post('(:num)/me-interesa', [Inicio::class, 'me_interesa_opciones/$1'], ['as' => 'me_interesa_opciones']);
         $routes->get('(:num)/me-interesa', [Inicio::class, 'me_interesa/$1'], ['as' => 'me_interesa']);
+        $routes->get('(:num)/me-interesa/proceso', [Inicio::class, 'me_interesa_opciones/$1'], ['filter' => 'group:cliente', 'as' => 'me_interesa_opciones']);
+
+        $routes->post('(:num)/separar', [Separaciones::class, 'create'], ['filter' => 'group:cliente', 'as' => 'crear_separaciones']);
+
+        $routes->get('(:num)/separacion-exitosa', [Separaciones::class, 'show/$1'], ['filter' => 'group:cliente', 'as' => 'separacion_exitosa']);
     });
 
     $routes->group('admin', function ($routes) {
@@ -140,7 +144,6 @@ $routes->group('', function ($routes) {
         $routes->get('/', [Dashboard::class, 'index'], ['as' => 'mi_cuenta']);
 
         $routes->group('separaciones', function ($routes) {
-            $routes->post('/', [Separaciones::class, 'create'], ['filter' => 'permission:separaciones.crear', 'as' => 'crear_separaciones']);
             $routes->get('agregar', [Separaciones::class, 'new'], ['filter' => 'permission:separaciones.crear', 'as' => 'agregar_separaciones']);
             $routes->get('/', [Separaciones::class, 'index'], ['filter' => 'permission:separaciones.ver', 'as' => 'separaciones']);
             $routes->get('(:num)/editar', [Separaciones::class, 'edit/$1'], ['filter' => 'permission:separaciones.editar', 'as' => 'editar_separaciones']);

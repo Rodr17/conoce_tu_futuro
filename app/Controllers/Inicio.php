@@ -11,6 +11,7 @@ class Inicio extends BaseController
     {
         helper('number');
     }
+    
     /**
      * Muestra una vista
      *
@@ -175,7 +176,9 @@ class Inicio extends BaseController
             $datos['parametros_tipos_de_combustible'] = $tipos_de_combustible;
         }
 
-        $automoviles_query->orderBy('automoviles.id', 'DESC');
+        $automoviles_query
+        ->where('estatus', 'Disponible')
+        ->orderBy('automoviles.id', 'DESC');
 
         $datos['automoviles'] = $automoviles_query->paginate(config('Pager')->perPage);
         $datos['paginacion']  = $automoviles_query->pager;
@@ -308,11 +311,11 @@ class Inicio extends BaseController
             ->join('marcas', 'marcas.id = modelos.id_marca', 'left')
             ->join('versiones', 'versiones.id = automoviles.id_version', 'left')
             ->join('colores', 'colores.id = automoviles.id_color', 'left');
-            
+
         if ($id_usuario) {
-            $automoviles_query->join('favoritos_automoviles', 'favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = ' . $id_usuario, 'left');
-            # code...
+            $automoviles_query->join('favoritos_automoviles', "favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = $id_usuario", 'left');
         }
+
         $datos['automovil'] = $automoviles_query->first();
 
         if (!$datos['automovil']) {
@@ -333,24 +336,63 @@ class Inicio extends BaseController
     /**
      * Muestra una vista
      *
-     * @return string
+     * @return string|RedirectResponse
      */
     public function me_interesa_opciones($id = null)
     {
-        $datos = $this->request->getPost();
-        
-        $datos['automovil'] = model('Automoviles')
-            ->select(['id'])
-            ->find($id);
+        $opcion = $this->request->getGet('opcion');
+
+        $opciones = [
+            'separacion',
+            'agendar-visita'
+        ];
+
+        if (array_search($opcion, $opciones) === false) {
+            return redirect()->route('me_interesa', [$id])->withInput()->with('alerta', ['tipo' => 'alert-warning', 'mensaje' => '¡Selecciona Separar ó Agendar visita!']);
+        }
+
+        $id_usuario = auth()->id();
+
+        $automoviles_query = model('Automoviles')
+            ->select([
+                'automoviles.*',
+                'marcas.nombre AS marca',
+                'CONCAT(
+                    marcas.nombre, " ",
+                    modelos.nombre, " ",
+                    IFNULL(versiones.nombre, "")
+                ) AS nombre',
+                'colores.nombre AS color_nombre',
+                'colores.hexadecimal AS color_hexadecimal',
+                'IF(favoritos_automoviles.id IS NOT NULL, 1, 0) AS es_favorito'
+            ])
+            ->join('modelos', 'modelos.id = automoviles.id_modelo', 'left')
+            ->join('marcas', 'marcas.id = modelos.id_marca', 'left')
+            ->join('versiones', 'versiones.id = automoviles.id_version', 'left')
+            ->join('colores', 'colores.id = automoviles.id_color', 'left')
+            ->join('favoritos_automoviles', "favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = $id_usuario", 'left');
+
+        $datos['automovil'] = $automoviles_query->find($id);
 
         if (!$datos['automovil']) {
             throw PageNotFoundException::forPageNotFound();
         }
 
-        $datos['costo_separacion'] = obtener_configuracion('monto_separacion');
-        $datos['costo_separacion'] = number_to_currency($datos['costo_separacion'], 'MXN', 'es_MX');
+        if ($opcion == 'separacion') {
+            $costo_separacion = obtener_configuracion('monto_separacion');
+            $iva              = $costo_separacion * .16;
+            $subtotal         = $costo_separacion - $iva;
+            $total            = $subtotal + $iva;
 
-        return view('Publico/separacion', $datos);
+            $datos['iva']      = number_to_currency($iva, 'MXN', 'es_MX');
+            $datos['subtotal'] = number_to_currency($subtotal, 'MXN', 'es_MX');
+            $datos['total']    = number_to_currency($total, 'MXN', 'es_MX');
+
+            $datos['openpay_id'] = obtener_configuracion('openpay_id');
+            $datos['openpay_llave_publica'] = obtener_configuracion('openpay_llave_publica');
+        }
+
+        return view("Publico/$opcion", $datos);
     }
 
     /**
