@@ -19,7 +19,51 @@ class Inicio extends BaseController
      */
     public function index()
     {
-        return view('Publico/inicio');
+        $id_usuario = auth()->id();
+
+        $campos = [
+            'automoviles.id',
+            'automoviles.año',
+            'automoviles.precio',
+            'automoviles.imagen',
+            'automoviles.estatus',
+            'marcas.nombre AS marca',
+            'CONCAT(
+                modelos.nombre, " ",
+                IF(versiones.nombre, versiones.nombre, ""), " ", 
+                automoviles.año 
+            ) AS nombre',
+            'automoviles.descripcion',
+            'colores.nombre AS color_nombre',
+            'colores.hexadecimal AS color_hexadecimal',
+        ];
+
+        if ($id_usuario) {
+            $campos[] = 'IF(favoritos_automoviles.id IS NOT NULL, 1, 0) AS es_favorito';
+        }
+
+        $automoviles_query = model('Automoviles')
+            ->select($campos)
+            ->join('modelos', 'modelos.id = automoviles.id_modelo', 'left')
+            ->join('marcas', 'marcas.id = modelos.id_marca', 'left')
+            ->join('versiones', 'versiones.id = automoviles.id_version', 'left')
+            ->join('colores', 'colores.id = automoviles.id_color', 'left')
+            ->join('transmisiones', 'transmisiones.id = automoviles.id_transmision', 'left')
+            ->join('tipos_de_combustible', 'tipos_de_combustible.id = automoviles.id_tipo_de_combustible', 'left');
+
+        if ($id_usuario) {
+            $automoviles_query->join('favoritos_automoviles', "favoritos_automoviles.id_automovil = automoviles.id AND favoritos_automoviles.id_usuario = $id_usuario", 'left');
+        }
+
+        $datos['autos_recientes'] = $automoviles_query
+        ->where('estatus', 'Disponible')
+        ->orderBy('automoviles.id', 'DESC')
+        ->limit(8)
+        ->find();
+
+        // dd($datos['autos_recientes']);
+
+        return view('Publico/inicio', $datos);
     }
 
     /**

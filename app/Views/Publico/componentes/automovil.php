@@ -26,6 +26,11 @@ $imagenes = model('AutomovilesImagenes')
 
             <a href="<?= base_url(route_to('automovil', $automovil['id'])) ?>" class="primary-img"><img class="img-fluid bg-img" src="<?= base_url($automovil['imagen']) ?>" alt="Automóvil" /> </a>
 
+            <?php if(isset($automovil['es_nuevo']) && $automovil['es_nuevo']) : ?>
+                <!-- Arrow label -->
+                <span class="arrow-label-wrap"> <span class="arrow-label bg-theme-sun"> Reciente</span> </span>
+            <?php endif ?>
+
             <!-- Option -->
             <ul class="option-wrap">
                 <li>
